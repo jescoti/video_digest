@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "node app/server.js",
+    "build-ocr": "bash scripts/build_ocr.sh"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.56.0"
+  }
+}

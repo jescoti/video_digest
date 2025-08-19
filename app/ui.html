@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8">
+<title>Video Digest</title>
+<link rel="stylesheet" href="/assets/style.css">
+<div class="wrap">
+  <h1>Video Digest</h1>
+  <form id="f">
+    <input name="url" placeholder="YouTube URL" required>
+    <br>
+    <textarea name="focus" placeholder="Optional: what to emphasize (e.g., ‘Focus on how they used the Lumi system, and specific numerical benchmarks’)"></textarea>
+    <br>
+    <button>Process</button>
+  </form>
+  <div id="msg"></div>
+  <h2>Processed</h2>
+  <ul id="list"></ul>
+</div>
+<script>
+const f = document.getElementById('f'), msg = document.getElementById('msg'), list = document.getElementById('list');
+f.onsubmit = async (e) => {
+  e.preventDefault();
+  msg.textContent = "Queued…";
+  const body = { url: f.url.value, focus: f.focus.value || "" };
+  const r = await fetch('/api/ingest', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  const j = await r.json().catch(()=>({}));
+  msg.textContent = j.message || r.statusText;
+  f.reset(); load();
+};
+async function load(){
+  const r = await fetch('/api/list'); const data = await r.json();
+  list.innerHTML = data.map(v => `<li><a href="${v.slides}" target="_blank">${v.title}</a> — ${v.channel} — ${v.id}</li>`).join('');
+}
+load();
+</script>
