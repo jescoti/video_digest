@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { pipelineForUrl, listDecks } from './pipeline.js';
@@ -32,6 +33,39 @@ app.post('/api/ingest', async (req,res)=>{
 });
 
 app.get('/api/list', async (_,res)=> res.json(await listDecks()));
+
+app.get('/:videoId', async (req, res) => {
+  const videoId = req.params.videoId;
+  const slidePath = path.join(__dirname, '..', 'summaries', 'videos', videoId, 'slides.html');
+  
+  if (!fs.existsSync(slidePath)) {
+    // Try to generate if slides don't exist
+    try {
+      console.log(`Generating slides for ${videoId}...`);
+      // For existing video directories, just run the LLM and compilation steps
+      const vdir = path.join(__dirname, '..', 'summaries', 'videos', videoId);
+      if (fs.existsSync(vdir)) {
+        const { summarizeToMarp } = await import('./llm.js');
+        await summarizeToMarp(vdir, { focus: "" });
+        // Compile slides → HTML
+        const { spawn } = await import('child_process');
+        const marp = spawn('npx', ['-y','@marp-team/marp-cli', path.join(vdir,'slides.md'), '--html', '--allow-local-files', '--output', path.join(vdir,'slides.html')]);
+        await new Promise((resolve, reject) => {
+          marp.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Marp failed with code ${code}`)));
+        });
+      }
+    } catch (error) {
+      console.error('Error generating slides:', error);
+      return res.status(500).send('Error generating slides');
+    }
+  }
+  
+  if (fs.existsSync(slidePath)) {
+    res.sendFile(slidePath);
+  } else {
+    res.status(404).send('Video not found');
+  }
+});
 
 const PORT = process.env.PORT || 7777;
 app.listen(PORT, ()=>console.log('Video Digest listening on http://localhost:'+PORT));

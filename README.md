@@ -10,20 +10,26 @@ xcode-select --install
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install ffmpeg yt-dlp jq node python gh tesseract
 
-# whisper.cpp (local STT)
-brew install whisper-cpp
+# whisper-cli (local STT)
+brew install whisper-cli
 
 # Marp CLI (for HTML slides)
 npm -g i @marp-team/marp-cli
 
-# 2) Install project deps
+# 2) Set up Python virtual environment
 cd video_digest
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pillow ImageHash numpy
+
+# 3) Install project deps
 cp .env.example .env   # add your OpenAI key
 npm install
 npm run build-ocr      # compile the Apple Vision OCR helper (Swift)
 
-# 3) Run
-npm run dev
+# 4) Run (with venv activated)
+source .venv/bin/activate
+PATH="$(pwd)/.venv/bin:$PATH" npm run dev
 # open http://localhost:7777
 ```
 
@@ -49,8 +55,9 @@ Edit `.env` (copied from `.env.example`):
 
 ## Notes
 
-- **CPU-only** pipeline (no GPU). whisper.cpp runs locally.
+- **CPU-only** pipeline (no GPU). whisper-cli runs locally.
 - **Apple Vision OCR** used via a tiny Swift binary (fast + on-device). Tesseract is installed as a fallback if you want to extend.
+- **Python virtual environment** is required for the dedupe script dependencies (Pillow, ImageHash, numpy).
 - Alignment is **left-anchored**: transcript text is associated to the most recent prior keyframe (within a configurable lookback).
 - We never commit video files; only images + text. Initialize your own git repo if you want versioning or push to GitHub.
 
@@ -60,7 +67,7 @@ Edit `.env` (copied from `.env.example`):
 - `scripts/parse_showinfo.js` — parse frame timestamps
 - `scripts/ocr_vision.swift` / `npm run build-ocr` — Apple Vision OCR
 - `scripts/dedupe_ocr_aware.py` — OCR+phash+time dedupe
-- `scripts/transcribe.sh` — whisper.cpp → VTT
+- `scripts/transcribe.sh` — whisper-cli → VTT
 - `scripts/clean_vtt.py` — turn VTT into readable Markdown with `[mm:ss]`
 - `scripts/align_frames_prior.py` — left-anchored alignment
 - `app/llm.js` — OpenAI call to produce Marp slides (HTML via marp-cli)

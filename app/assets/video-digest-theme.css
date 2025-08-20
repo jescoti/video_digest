@@ -1,0 +1,101 @@
+/* Video Digest Marp Theme */
+/* Improves text visibility over backgrounds with outlines and better contrast */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+section {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 24px;
+  line-height: 1.4;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Headings with white backgrounds for visibility over bg images */
+h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px 25px;
+  border-radius: 10px;
+  margin: 15px 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 2.2em;
+  border-bottom: none;
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+/* List items with white background for better visibility over bg images */
+ul, ol {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px 30px;
+  border-radius: 12px;
+  margin: 20px 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+li {
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-bottom: 0.8em;
+  font-size: 1.1em;
+  line-height: 1.5;
+}
+
+/* Content positioning at bottom of slide */
+section > * {
+  margin-top: auto;
+}
+
+/* Code and timestamps */
+code {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'SF Mono', Monaco, monospace;
+  border: 1px solid #e5e5e5;
+}
+
+/* Better image handling */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+  display: block;
+}
+
+/* Pagination */
+section::after {
+  color: #666;
+  font-size: 16px;
+  text-shadow: 
+    -1px -1px 0 #ffffff,
+    1px -1px 0 #ffffff,
+    -1px 1px 0 #ffffff,
+    1px 1px 0 #ffffff;
+}
+
+/* Special styling for focus sections */
+section:has(h1:contains("FOCUS")) {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+section:has(h1:contains("FOCUS")) h1 {
+  color: #1e40af;
+  border-bottom-color: #1e40af;
+}

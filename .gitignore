@@ -1,4 +1,17 @@
-node_modules/
+# Config and secrets
 .env
+
+# Package storage
+.venv
+models/**
+node_modules/
+
+# Outputs
 summaries/**/input.*
+summaries/**
+*.wav
+
+# Misc
 *.DS_Store
+# Large model binaries
+models/*.bin

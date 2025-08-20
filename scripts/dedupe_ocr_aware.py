@@ -68,8 +68,13 @@ for g in groups:
             if last is None or m["t"]-last <= RUN_JOIN:
                 run.append(m); last=m["t"]
             else:
-                final.append(run[0]); run=[m]; last=m["t"]
-        if run: final.append(run[0])
+                # Select best frame from run (prefer frames with substantial OCR text)
+                best = max(run, key=lambda x: len(norm(x.get("ocr_text", ""))))
+                final.append(best); run=[m]; last=m["t"]
+        if run: 
+            # Select best frame from final run
+            best = max(run, key=lambda x: len(norm(x.get("ocr_text", ""))))
+            final.append(best)
 
 final.sort(key=lambda x:x["t"])
 json.dump(final, sys.stdout, indent=2)

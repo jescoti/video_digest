@@ -15,16 +15,24 @@ if not frames or not cues:
 
 fts=[f["t"] for f in frames]
 out=[]
+
 for i,f in enumerate(frames):
     bucket=[]
     for t,text in cues:
-        # find most recent prior frame index j
-        j=-1
-        for k,ft in enumerate(fts):
-            if ft<=t: j=k
-            else: break
-        if j==i and t - f["t"] <= lookback:
+        # Find nearest keyframe to this transcript timestamp
+        nearest_idx = 0
+        min_distance = abs(fts[0] - t)
+        
+        for k, ft in enumerate(fts):
+            distance = abs(ft - t)
+            if distance < min_distance:
+                min_distance = distance
+                nearest_idx = k
+        
+        # Only assign to this frame if it's the nearest AND within lookback window
+        if nearest_idx == i and min_distance <= lookback:
             bucket.append((t,text))
+    
     if bucket:
         start=bucket[0][0]
         end=bucket[-1][0]
@@ -34,4 +42,5 @@ for i,f in enumerate(frames):
             "text": " ".join([b[1] for b in bucket]),
             "keyframes": [frames[i]["file"].split("/")[-1]]
         })
+
 print(json.dumps(out, indent=2))

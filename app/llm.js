@@ -33,11 +33,10 @@ ${transcript.slice(0, 120000)}
       { role:'system', content: sys },
       { role:'user', content: userPrompt }
     ],
-    temperature: 0.2,
   });
 
   const raw = resp.choices?.[0]?.message?.content?.trim() || "";
-  const fm = `---\nmarp: true\ntheme: default\npaginate: true\ntitle: "${meta.title.replace(/"/g,'\\"')}"\n---\n\n`;
+  const fm = `---\nmarp: true\ntheme: default\npaginate: true\ntitle: "${meta.title.replace(/"/g,'\\"')}"\nstyle: |\n  @import url('app/assets/video-digest-theme.css');\n---\n\n`;
   const slides = raw.startsWith('---') ? raw : (fm + raw);
   fs.writeFileSync(path.join(vdir,'slides.md'), slides);
   return slides;
